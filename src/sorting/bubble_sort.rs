@@ -11,7 +11,7 @@ where
     while sorted_len < size {
         let mut i = size - 1;
         while i > sorted_len {
-            if !compare(&slice[i], &slice[i - 1]) {
+            if compare(&slice[i], &slice[i - 1]) {
                 slice.swap(i, i - 1);
             }
             i -= 1;
@@ -32,9 +32,9 @@ fn test_bubble_sort() {
     let mut s = [0];
     bubble_sort(&mut s, &mut |a, b| a < b);
     assert_eq!(s, [0]);
-    let mut s = ['c', 'b', 'a'];
-    bubble_sort(&mut s, &mut |a, b| a < b);
-    assert_eq!(s, ['a', 'b', 'c']);
+    let mut s = ['c', 'a', 'b'];
+    bubble_sort(&mut s, &mut |a, b| a > b);
+    assert_eq!(s, ['c', 'b', 'a']);
     let mut s = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     bubble_sort(&mut s, &mut |a, b| a < b);
     assert_eq!(s, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
@@ -50,7 +50,7 @@ fn test_bubble_sort() {
         TempNode { val: 6, key: 8 },
         TempNode { val: 5, key: 7 },
     ];
-    bubble_sort(&mut s, &mut |a, b| a.val <= b.val);
+    bubble_sort(&mut s, &mut |a, b| a.val < b.val);
     let keys: Vec<i32> = s.iter().map(|node| node.key).collect();
     let vals: Vec<i32> = s.iter().map(|node| node.val).collect();
     println!("vals = {:?}", vals);
