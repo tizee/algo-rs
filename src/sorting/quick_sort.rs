@@ -1,8 +1,7 @@
-use std::cmp::Ordering;
 // inplace sorting
 pub fn quick_sort<T, F>(slice: &mut [T], compare: &mut F)
 where
-    T: Ord,
+    T: PartialOrd,
     F: FnMut(&T, &T) -> bool,
 {
     // find the pivot for partition the slice into two parts of items smaller than
@@ -23,7 +22,7 @@ where
 
 fn partition<T, F>(slice: &mut [T], pivot: usize, is_less: &mut F) -> usize
 where
-    T: Ord,
+    T: PartialOrd,
     F: FnMut(&T, &T) -> bool,
 {
     let mut left = 0;
@@ -53,6 +52,7 @@ where
 
 #[test]
 fn test_quick_sort() {
+    use crate::util::temp_node::TempNode;
     let mut s = [6, 5, 4, 3, 2, 1];
     quick_sort(&mut s, &mut |a, b| a < b);
     assert_eq!(s, [1, 2, 3, 4, 5, 6]);
@@ -70,6 +70,7 @@ fn test_quick_sort() {
     assert_eq!(s, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 
     // unstable
+    // stable
     let mut s = [
         TempNode { val: 2, key: 3 },
         TempNode { val: 3, key: 4 },
@@ -77,36 +78,13 @@ fn test_quick_sort() {
         TempNode { val: 5, key: 6 },
         TempNode { val: 1, key: 1 },
         TempNode { val: 9, key: 9 },
+        TempNode { val: 5, key: 5 },
         TempNode { val: 6, key: 8 },
         TempNode { val: 5, key: 7 },
     ];
-    quick_sort(&mut s, &mut |a, b| a.val < b.val);
+    quick_sort(&mut s, &mut |a, b| a.val <= b.val);
     let keys: Vec<i32> = s.iter().map(|node| node.key).collect();
-    assert_ne!(keys, [2, 1, 3, 4, 6, 7, 8, 9])
-}
-
-// stable sorting verification
-struct TempNode {
-    val: i32,
-    key: i32,
-}
-
-impl Ord for TempNode {
-    fn cmp(&self, other: &Self) -> Ordering {
-        return self.val.cmp(&other.val);
-    }
-}
-
-impl PartialOrd for TempNode {
-    fn partial_cmp(&self, other: &TempNode) -> Option<Ordering> {
-        return Some(self.val.cmp(&other.val));
-    }
-}
-
-impl Eq for TempNode {}
-
-impl PartialEq for TempNode {
-    fn eq(&self, other: &TempNode) -> bool {
-        return self.val == other.val;
-    }
+    let vals: Vec<i32> = s.iter().map(|node| node.val).collect();
+    println!("vals = {:?}", vals);
+    assert_ne!(keys, [2, 1, 3, 4, 6, 5, 7, 8, 9])
 }
